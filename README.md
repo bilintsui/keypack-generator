@@ -1,7 +1,7 @@
-# Minecraft TranslateKey Pack Generator
+# Minecraft TranslationKey Pack Generator
 This is the core script to generate a language file from the built-in one in Minecraft client JARs.
 
-This script outputs values in MediaWiki "qqx" format.
+This script outputs values in MediaWiki "uselang=qqx" format.
 
 ## Prerequisites
 * Linux
