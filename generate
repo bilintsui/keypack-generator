@@ -1,48 +1,41 @@
 #! /usr/bin/perl
 use JSON;
-chomp(my @source=<STDIN>);
-my @source_copy=@source;
+chomp( my @source = <STDIN> );
+my @source_copy = @source;
 shift @source_copy;
 pop @source_copy;
 my @keys;
-foreach $recline(@source_copy)
-{
-	$recline=~s/^\s*\"//;
-	$recline=~s/\".*$//;
+foreach $recline ( @source_copy ) {
+	$recline =~ s/^\s*\"//;
+	$recline =~ s/\".*$//;
 	push @keys, $recline;
 }
-my $object=decode_json(join("\n",@source));
-my @output=();
-foreach $reckey(@keys)
-{
-	my $recvalue=$object->{$reckey};
-	$recvalue=~s/\\/\\\\/g;
-	$recvalue=~s/\n/\\n/g;
-	$recvalue=~s/\"/\\"/g;
-	if($recvalue=~/%\d*\$*[a-z]/)
-	{
-		my @arglist;
-		while($recvalue=~/%%/)
-		{
-			$recvalue=~s/%%//;
+my $object = decode_json( join( "\n", @source ) );
+my @output = ();
+foreach $reckey ( @keys ) {
+	my $recvalue = $object->{ $reckey };
+	$recvalue =~ s/\\/\\\\/g;
+	$recvalue =~ s/\n/\\n/g;
+	$recvalue =~ s/\"/\\"/g;
+	if ( $recvalue =~ /%\d*\$*[a-z]/ ) {
+		my @arglist = ();
+		while ( $recvalue =~ /%%/ ) {
+			$recvalue =~ s/%%//;
 		}
-		while($recvalue=~/%(\d+)\$([a-z])/)
-		{
-			$arglist[$1-1]=$2;
-			$recvalue=~s/%\d+\$[a-z]//;
+		while ( $recvalue =~ /%(\d+)\$([a-z])/ ) {
+			$arglist [ $1 - 1 ] = $2;
+			$recvalue =~ s/%\d+\$[a-z]//;
 		}
-		my $count=0;
-		while($recvalue=~/%([a-z])/)
+		my $count = 0;
+		while ( $recvalue =~ /%([a-z])/ )
 		{
-			$arglist[$count]=$1;
-			$recvalue=~s/%[a-z]//;
+			$arglist[ $count ] = $1;
+			$recvalue =~ s/%[a-z]//;
 			$count++;
 		}
-		push @output, "  \"$reckey\": \"($reckey: %".join(', %',@arglist).")\"";
-	}
-	else
-	{
-		push @output, "  \"$reckey\": \"($reckey)\"";
+		push @output, "  \"${ reckey }\": \"(${ reckey }: %" . join( ', %', @arglist ) . ")\"";
+	} else {
+		push @output, "  \"${ reckey }\": \"(${ reckey })\"";
 	}
 }
-print "{\n".join(",\n",@output)."\n}\n";
+print "{\n" . join ( ",\n", @output ) . "\n}\n";
